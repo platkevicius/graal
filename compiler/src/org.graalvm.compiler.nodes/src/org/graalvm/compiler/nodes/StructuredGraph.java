@@ -64,6 +64,7 @@ import org.graalvm.compiler.nodes.spi.ResolvedJavaMethodProfileProvider;
 import org.graalvm.compiler.nodes.spi.VirtualizableAllocation;
 import org.graalvm.compiler.nodes.util.GraphUtil;
 import org.graalvm.compiler.options.OptionValues;
+import org.graalvm.util.GuardedAnnotationAccess;
 
 import jdk.vm.ci.code.BytecodeFrame;
 import jdk.vm.ci.meta.Assumptions;
@@ -508,7 +509,7 @@ public final class StructuredGraph extends Graph implements JavaMethodContext {
     private static boolean checkIsSubstitutionInvariants(ResolvedJavaMethod method, boolean isSubstitution) {
         if (!IS_IN_NATIVE_IMAGE) {
             if (method != null) {
-                if (method.getAnnotation(Snippet.class) != null) {
+                if (GuardedAnnotationAccess.isAnnotationPresent(method, Snippet.class)) {
                     assert isSubstitution : "Graph for method " + method.format("%H.%n(%p)") +
                                     " annotated by " + Snippet.class.getName() +
                                     " must have its `isSubstitution` field set to true";

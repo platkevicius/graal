@@ -1517,6 +1517,9 @@ public final class DynamicHub implements JavaKind.FormatWithToString, AnnotatedE
     @TargetElement(onlyWith = JDK17OrLater.class)
     private native boolean isDirectSubType(Class<?> c);
 
+    @KeepOriginal
+    native boolean casAnnotationType(AnnotationType oldType, AnnotationType newType);
+
     /*
      * We need to filter out hiding elements at the last moment. This ensures that the JDK internals
      * see them as regular methods and fields and ensure their visibility is correct, but they

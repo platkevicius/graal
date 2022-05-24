@@ -455,27 +455,11 @@ suite = {
       "workingSets" : "Graal",
     },
 
-    "org.graalvm.util" : {
-      "subDir" : "src",
-      "sourceDirs" : ["src"],
-      "dependencies" : [
-        "sdk:GRAAL_SDK",
-      ],
-      "requiresConcealed" : {
-        "java.base" : [
-          "jdk.internal.module",
-        ]
-      },
-      "checkstyle" : "org.graalvm.compiler.graph",
-      "javaCompliance" : "11+",
-      "workingSets" : "API,Graal",
-    },
-
     "org.graalvm.util.test" : {
       "subDir" : "src",
       "sourceDirs" : ["src"],
       "dependencies" : [
-        "org.graalvm.util",
+        "sdk:GRAAL_SDK",
         "org.graalvm.compiler.core.test",
       ],
       "requiresConcealed" : {
@@ -1440,7 +1424,6 @@ suite = {
       "subDir" : "src",
       "sourceDirs" : ["src"],
       "dependencies" : [
-        "org.graalvm.util",
         "org.graalvm.compiler.debug",
         "sdk:GRAAL_SDK",
       ],
@@ -1482,7 +1465,7 @@ suite = {
       "sourceDirs" : ["src"],
       "dependencies" : [
         "org.graalvm.compiler.debug",
-        "org.graalvm.util",
+        "sdk:GRAAL_SDK",
         "mx:JUNIT",
       ],
       "requires" : [
@@ -1762,7 +1745,7 @@ suite = {
         "org.graalvm.libgraal",
         "org.graalvm.compiler.truffle.runtime.hotspot",
         "org.graalvm.compiler.truffle.common.hotspot.libgraal",
-        "org.graalvm.util",
+        "sdk:GRAAL_SDK",
       ],
       "requiresConcealed" : {
         "jdk.internal.vm.ci" : [
@@ -2045,7 +2028,6 @@ suite = {
           "org.graalvm.compiler.serviceprovider        to jdk.internal.vm.compiler.management,org.graalvm.nativeimage.driver,org.graalvm.nativeimage.agent.jvmtibase,org.graalvm.nativeimage.agent.diagnostics",
           "org.graalvm.compiler.truffle.jfr            to jdk.internal.vm.compiler.truffle.jfr",
           "org.graalvm.libgraal                        to jdk.internal.vm.compiler.management",
-          "org.graalvm.util                            to jdk.internal.vm.compiler.management",
         ],
         "uses" : [
           "com.oracle.truffle.api.impl.TruffleLocator",

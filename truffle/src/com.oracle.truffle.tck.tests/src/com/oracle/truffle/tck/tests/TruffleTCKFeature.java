@@ -58,8 +58,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 import org.graalvm.nativeimage.hosted.Feature;
 import org.graalvm.nativeimage.hosted.RuntimeReflection;
+import org.graalvm.util.GuardedAnnotationAccess;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -118,8 +120,9 @@ public class TruffleTCKFeature implements Feature {
     }
 
     private static boolean isJUnitEntryPoint(Method method) {
-        return method.isAnnotationPresent(After.class) || method.isAnnotationPresent(AfterClass.class) || method.isAnnotationPresent(Before.class) || method.isAnnotationPresent(BeforeClass.class) ||
-                        method.isAnnotationPresent(Parameters.class) || method.isAnnotationPresent(Test.class);
+        return GuardedAnnotationAccess.isAnnotationPresent(method, After.class) || GuardedAnnotationAccess.isAnnotationPresent(method, AfterClass.class) ||
+                        GuardedAnnotationAccess.isAnnotationPresent(method, Before.class) || GuardedAnnotationAccess.isAnnotationPresent(method, BeforeClass.class) ||
+                        GuardedAnnotationAccess.isAnnotationPresent(method, Parameters.class) || GuardedAnnotationAccess.isAnnotationPresent(method, Test.class);
     }
 
     private static Collection<String> findTCKTests() {

@@ -330,6 +330,18 @@ suite = {
       "javaCompliance" : "11+",
       "workingSets" : "API,SDK",
     },
+    "org.graalvm.util" : {
+      "subDir" : "src",
+      "sourceDirs" : ["src"],
+      "requiresConcealed" : {
+        "java.base" : [
+          "jdk.internal.module",
+        ]
+      },
+      "checkstyle" : "org.graalvm.word",
+      "javaCompliance" : "11+",
+      "workingSets" : "API,SDK",
+    },
   },
   "licenses" : {
     "UPL" : {
@@ -359,6 +371,7 @@ suite = {
         "org.graalvm.nativeimage",
         "org.graalvm.collections",
         "org.graalvm.home",
+        "org.graalvm.util",
       ],
       "distDependencies" : [],
       "javadocType": "api",
@@ -383,13 +396,15 @@ suite = {
           "org.graalvm.polyglot.management",
           "org.graalvm.polyglot",
           "org.graalvm.options",
+          "org.graalvm.util",
           "org.graalvm.word",
           "org.graalvm.polyglot.impl to org.graalvm.truffle, com.oracle.graal.graal_enterprise",
           "org.graalvm.word.impl to jdk.internal.vm.compiler",
           "org.graalvm.nativeimage.impl to org.graalvm.nativeimage.builder,org.graalvm.nativeimage.configure,com.oracle.svm.svm_enterprise",
         ],
         "uses" : [
-          "org.graalvm.polyglot.impl.AbstractPolyglotImpl"
+          "org.graalvm.polyglot.impl.AbstractPolyglotImpl",
+          "org.graalvm.util.AnnotationExtracter",
         ],
         "opens" : [
           "org.graalvm.polyglot to org.graalvm.truffle"

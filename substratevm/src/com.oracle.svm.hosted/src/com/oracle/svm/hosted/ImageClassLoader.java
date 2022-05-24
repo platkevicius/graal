@@ -49,6 +49,7 @@ import org.graalvm.collections.EconomicSet;
 import org.graalvm.compiler.word.Word;
 import org.graalvm.nativeimage.Platform;
 import org.graalvm.nativeimage.Platforms;
+import org.graalvm.util.GuardedAnnotationAccess;
 
 import com.oracle.svm.core.TypeResult;
 
@@ -101,7 +102,7 @@ public final class ImageClassLoader {
         }
         if (declaredMethods != null) {
             for (Method systemMethod : declaredMethods) {
-                if (annotationsAvailable(systemMethod) && NativeImageGenerator.includedIn(platform, systemMethod.getAnnotation(Platforms.class))) {
+                if (isInPlatform(systemMethod)) {
                     synchronized (systemMethods) {
                         systemMethods.add(systemMethod);
                     }
@@ -117,7 +118,7 @@ public final class ImageClassLoader {
         }
         if (declaredFields != null) {
             for (Field systemField : declaredFields) {
-                if (annotationsAvailable(systemField) && NativeImageGenerator.includedIn(platform, systemField.getAnnotation(Platforms.class))) {
+                if (isInPlatform(systemField)) {
                     synchronized (systemFields) {
                         systemFields.add(systemField);
                     }
@@ -126,30 +127,10 @@ public final class ImageClassLoader {
         }
     }
 
-    /**
-     * @param element The element to check
-     * @return Returns true if the annotations on the {@code element} can be loaded without any
-     *         errors.
-     */
-    private static boolean canLoadAnnotations(AnnotatedElement element) {
+    private boolean isInPlatform(AnnotatedElement element) {
         try {
-            element.getAnnotations();
-            return true;
-        } catch (Throwable t) {
-            handleClassLoadingError(t);
-            return false;
-        }
-    }
-
-    /**
-     * @param element The element to check
-     * @return Returns true if and only if the the {@code element} has any annotations present and
-     *         the {@link AnnotatedElement#getAnnotations()} did not throw any error.
-     */
-    private static boolean annotationsAvailable(AnnotatedElement element) {
-        try {
-            final Annotation[] annotations = element.getAnnotations();
-            return annotations.length != 0;
+            Platforms platformAnnotation = GuardedAnnotationAccess.getAnnotation(element, Platforms.class);
+            return NativeImageGenerator.includedIn(platform, platformAnnotation);
         } catch (Throwable t) {
             handleClassLoadingError(t);
             return false;
@@ -170,10 +151,13 @@ public final class ImageClassLoader {
             cur = clazz;
         }
         do {
-            if (!canLoadAnnotations(cur)) {
+            Platforms platformsAnnotation;
+            try {
+                platformsAnnotation = GuardedAnnotationAccess.getAnnotation(cur, Platforms.class);
+            } catch (Throwable t) {
+                handleClassLoadingError(t);
                 return;
             }
-            Platforms platformsAnnotation = cur.getAnnotation(Platforms.class);
             if (containsHostedOnly(platformsAnnotation)) {
                 isHostedOnly = true;
             } else if (!NativeImageGenerator.includedIn(platform, platformsAnnotation)) {
@@ -352,7 +336,7 @@ public final class ImageClassLoader {
 
     private static void addAnnotatedClasses(EconomicSet<Class<?>> classes, Class<? extends Annotation> annotationClass, ArrayList<Class<?>> result) {
         for (Class<?> systemClass : classes) {
-            if (systemClass.getAnnotation(annotationClass) != null) {
+            if (GuardedAnnotationAccess.isAnnotationPresent(systemClass, annotationClass)) {
                 result.add(systemClass);
             }
         }
@@ -361,7 +345,7 @@ public final class ImageClassLoader {
     public List<Method> findAnnotatedMethods(Class<? extends Annotation> annotationClass) {
         ArrayList<Method> result = new ArrayList<>();
         for (Method method : systemMethods) {
-            if (method.getAnnotation(annotationClass) != null) {
+            if (GuardedAnnotationAccess.isAnnotationPresent(method, annotationClass)) {
                 result.add(method);
             }
         }
@@ -373,7 +357,7 @@ public final class ImageClassLoader {
         for (Method method : systemMethods) {
             boolean match = true;
             for (Class<? extends Annotation> annotationClass : annotationClasses) {
-                if (method.getAnnotation(annotationClass) == null) {
+                if (!GuardedAnnotationAccess.isAnnotationPresent(method, annotationClass)) {
                     match = false;
                     break;
                 }
@@ -388,7 +372,7 @@ public final class ImageClassLoader {
     public List<Field> findAnnotatedFields(Class<? extends Annotation> annotationClass) {
         ArrayList<Field> result = new ArrayList<>();
         for (Field field : systemFields) {
-            if (field.getAnnotation(annotationClass) != null) {
+            if (GuardedAnnotationAccess.isAnnotationPresent(field, annotationClass)) {
                 result.add(field);
             }
         }
@@ -410,13 +394,13 @@ public final class ImageClassLoader {
     public <T extends Annotation> List<T> findAnnotations(Class<T> annotationClass) {
         List<T> result = new ArrayList<>();
         for (Class<?> clazz : findAnnotatedClasses(annotationClass, false)) {
-            result.add(clazz.getAnnotation(annotationClass));
+            result.add(GuardedAnnotationAccess.getAnnotation(clazz, annotationClass));
         }
         for (Method method : findAnnotatedMethods(annotationClass)) {
-            result.add(method.getAnnotation(annotationClass));
+            result.add(GuardedAnnotationAccess.getAnnotation(method, annotationClass));
         }
         for (Field field : findAnnotatedFields(annotationClass)) {
-            result.add(field.getAnnotation(annotationClass));
+            result.add(GuardedAnnotationAccess.getAnnotation(field, annotationClass));
         }
         return result;
     }

@@ -25,6 +25,7 @@
 package com.oracle.svm.hosted.annotation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.Map;
 
 import com.oracle.graal.pointsto.infrastructure.OriginalClassProvider;
 import com.oracle.graal.pointsto.util.GraalAccess;
+import com.oracle.svm.util.AnnotationWrapper;
 
 import jdk.vm.ci.common.JVMCIError;
 import jdk.vm.ci.meta.Assumptions.AssumptionResult;
@@ -47,7 +49,7 @@ import jdk.vm.ci.meta.ResolvedJavaType;
  * @param <F> The type of fields in the substitution type
  * @param <M> The type of methods in the substitution type
  */
-public abstract class CustomSubstitutionType<F extends CustomSubstitutionField, M extends CustomSubstitutionMethod> implements ResolvedJavaType, OriginalClassProvider {
+public abstract class CustomSubstitutionType<F extends CustomSubstitutionField, M extends CustomSubstitutionMethod> implements ResolvedJavaType, OriginalClassProvider, AnnotationWrapper {
 
     protected final ResolvedJavaType original;
     protected final List<F> fields;
@@ -256,6 +258,11 @@ public abstract class CustomSubstitutionType<F extends CustomSubstitutionField, 
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return original.getAnnotation(annotationClass);
+    }
+
+    @Override
+    public AnnotatedElement getAnnotationRoot() {
+        return original;
     }
 
     @Override

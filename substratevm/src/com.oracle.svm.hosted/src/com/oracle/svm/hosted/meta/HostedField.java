@@ -25,12 +25,15 @@
 package com.oracle.svm.hosted.meta;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 
 import com.oracle.graal.pointsto.infrastructure.OriginalFieldProvider;
+import com.oracle.graal.pointsto.infrastructure.WrappedElement;
 import com.oracle.graal.pointsto.meta.AnalysisField;
 import com.oracle.svm.core.meta.SharedField;
 import com.oracle.svm.core.meta.SubstrateObjectConstant;
+import com.oracle.svm.util.AnnotationWrapper;
 
 import jdk.vm.ci.meta.JavaConstant;
 import jdk.vm.ci.meta.JavaKind;
@@ -39,7 +42,7 @@ import jdk.vm.ci.meta.JavaTypeProfile;
 /**
  * Store the compile-time information for a field in the Substrate VM, such as the field offset.
  */
-public class HostedField implements OriginalFieldProvider, SharedField, Comparable<HostedField> {
+public class HostedField implements OriginalFieldProvider, SharedField, Comparable<HostedField>, WrappedElement, AnnotationWrapper {
 
     private final HostedUniverse universe;
     private final HostedMetaAccess metaAccess;
@@ -62,6 +65,11 @@ public class HostedField implements OriginalFieldProvider, SharedField, Comparab
         this.type = type;
         this.typeProfile = typeProfile;
         this.location = LOC_UNINITIALIZED;
+    }
+
+    @Override
+    public AnalysisField getWrapped() {
+        return wrapped;
     }
 
     public JavaTypeProfile getFieldTypeProfile() {
@@ -189,6 +197,11 @@ public class HostedField implements OriginalFieldProvider, SharedField, Comparab
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return wrapped.getAnnotation(annotationClass);
+    }
+
+    @Override
+    public AnnotatedElement getAnnotationRoot() {
+        return wrapped;
     }
 
     @Override

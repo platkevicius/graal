@@ -25,6 +25,7 @@
 package com.oracle.svm.hosted.substitute;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
@@ -33,6 +34,7 @@ import com.oracle.graal.pointsto.util.GraalAccess;
 import com.oracle.svm.core.annotate.Delete;
 import com.oracle.svm.core.annotate.InjectAccessors;
 import com.oracle.svm.core.meta.ReadableJavaField;
+import com.oracle.svm.util.AnnotationWrapper;
 import com.oracle.svm.util.ClassUtil;
 
 import jdk.vm.ci.meta.JavaConstant;
@@ -41,7 +43,7 @@ import jdk.vm.ci.meta.MetaAccessProvider;
 import jdk.vm.ci.meta.ResolvedJavaField;
 import jdk.vm.ci.meta.ResolvedJavaType;
 
-public class AnnotatedField implements ReadableJavaField, OriginalFieldProvider {
+public class AnnotatedField implements ReadableJavaField, OriginalFieldProvider, AnnotationWrapper {
 
     static Annotation[] appendAnnotationTo(Annotation[] array, Annotation element) {
         Annotation[] result = Arrays.copyOf(array, array.length + 1);
@@ -74,6 +76,16 @@ public class AnnotatedField implements ReadableJavaField, OriginalFieldProvider 
             return annotationClass.cast(injectedAnnotation);
         }
         return original.getAnnotation(annotationClass);
+    }
+
+    @Override
+    public AnnotatedElement getAnnotationRoot() {
+        return original;
+    }
+
+    @Override
+    public Annotation[] getInjectedAnnotations() {
+        return new Annotation[]{injectedAnnotation};
     }
 
     @Override

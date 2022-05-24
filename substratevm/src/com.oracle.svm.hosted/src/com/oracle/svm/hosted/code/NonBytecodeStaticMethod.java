@@ -25,11 +25,13 @@
 package com.oracle.svm.hosted.code;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 import com.oracle.graal.pointsto.infrastructure.GraphProvider;
 import com.oracle.svm.core.util.VMError;
+import com.oracle.svm.util.AnnotationWrapper;
 
 import jdk.vm.ci.meta.Constant;
 import jdk.vm.ci.meta.ConstantPool;
@@ -46,7 +48,7 @@ import jdk.vm.ci.meta.SpeculationLog;
  * Abstract base class for methods with generated Graal IR, i.e., methods that do not originate from
  * bytecode.
  */
-public abstract class NonBytecodeStaticMethod implements GraphProvider, ResolvedJavaMethod {
+public abstract class NonBytecodeStaticMethod implements GraphProvider, ResolvedJavaMethod, AnnotationWrapper {
     private static final Annotation[] NO_ANNOTATIONS = new Annotation[0];
 
     /**
@@ -247,6 +249,11 @@ public abstract class NonBytecodeStaticMethod implements GraphProvider, Resolved
     @Override
     public Annotation[] getDeclaredAnnotations() {
         return NO_ANNOTATIONS;
+    }
+
+    @Override
+    public AnnotatedElement getAnnotationRoot() {
+        return null;
     }
 
     @Override

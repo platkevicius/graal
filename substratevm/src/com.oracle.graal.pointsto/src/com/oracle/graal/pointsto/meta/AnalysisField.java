@@ -25,6 +25,7 @@
 package com.oracle.graal.pointsto.meta;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Set;
@@ -46,13 +47,14 @@ import com.oracle.graal.pointsto.infrastructure.OriginalFieldProvider;
 import com.oracle.graal.pointsto.typestate.TypeState;
 import com.oracle.graal.pointsto.util.AtomicUtils;
 import com.oracle.graal.pointsto.util.ConcurrentLightHashSet;
+import com.oracle.svm.util.AnnotationWrapper;
 import com.oracle.svm.util.UnsafePartitionKind;
 
 import jdk.vm.ci.meta.JavaKind;
 import jdk.vm.ci.meta.ResolvedJavaField;
 import jdk.vm.ci.meta.ResolvedJavaType;
 
-public abstract class AnalysisField extends AnalysisElement implements ResolvedJavaField, OriginalFieldProvider {
+public abstract class AnalysisField extends AnalysisElement implements ResolvedJavaField, OriginalFieldProvider, AnnotationWrapper {
 
     @SuppressWarnings("rawtypes")//
     private static final AtomicReferenceFieldUpdater<AnalysisField, Object> OBSERVERS_UPDATER = //
@@ -495,6 +497,11 @@ public abstract class AnalysisField extends AnalysisElement implements ResolvedJ
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return GuardedAnnotationAccess.getAnnotation(wrapped, annotationClass);
+    }
+
+    @Override
+    public AnnotatedElement getAnnotationRoot() {
+        return wrapped;
     }
 
     @Override

@@ -71,4 +71,9 @@ public abstract class EntryPointCallStubMethod extends NonBytecodeStaticMethod {
     public final Annotation[] getDeclaredAnnotations() {
         return new Annotation[]{UNINTERRUPTIBLE_ANNOTATION};
     }
+
+    @Override
+    public Annotation[] getInjectedAnnotations() {
+        return new Annotation[]{UNINTERRUPTIBLE_ANNOTATION};
+    }
 }

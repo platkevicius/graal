@@ -97,6 +97,11 @@ public final class FactoryMethod extends NonBytecodeStaticMethod {
     }
 
     @Override
+    public Annotation[] getInjectedAnnotations() {
+        return new Annotation[]{INLINE_ANNOTATION};
+    }
+
+    @Override
     public StructuredGraph buildGraph(DebugContext debug, ResolvedJavaMethod method, HostedProviders providers, Purpose purpose) {
         FactoryMethodSupport support = ImageSingletons.lookup(FactoryMethodSupport.class);
 

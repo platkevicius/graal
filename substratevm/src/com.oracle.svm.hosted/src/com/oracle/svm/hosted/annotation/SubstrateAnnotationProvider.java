@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2022, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,26 +22,21 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package org.graalvm.util;
+package com.oracle.svm.hosted.annotation;
 
-//Checkstyle: allow reflection
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-/**
- * Wrapper class for annotation access. The purpose of this class is to encapsulate the
- * AnnotatedElement.getAnnotation() to avoid the use of the "Checkstyle: allow direct annotation
- * access " and "Checkstyle: disallow direct annotation access" comments for situations where the
- * annotation access doesn't need to guarded, i.e., in runtime code or code that accesses annotation
- * on non-user types. See {@link GuardedAnnotationAccess} for details on these checkstyle rules.
- */
-public class DirectAnnotationAccess {
+import org.graalvm.util.AnnotationExtracter;
 
-    public static <T extends Annotation> boolean isAnnotationPresent(AnnotatedElement element, Class<T> annotationClass) {
-        return element.getAnnotation(annotationClass) != null;
+public class SubstrateAnnotationProvider implements AnnotationExtracter {
+    @Override
+    public boolean isAnnotationPresent(AnnotatedElement element, Class<? extends Annotation> annotationType) {
+        return SubstrateAnnotationExtracter.singleton().isAnnotationPresent(element, annotationType);
     }
 
-    public static <T extends Annotation> T getAnnotation(AnnotatedElement element, Class<T> annotationType) {
-        return element.getAnnotation(annotationType);
+    @Override
+    public <T extends Annotation> T getAnnotation(AnnotatedElement element, Class<T> annotationType, boolean declaredOnly) {
+        return SubstrateAnnotationExtracter.singleton().getAnnotation(element, annotationType, declaredOnly);
     }
 }

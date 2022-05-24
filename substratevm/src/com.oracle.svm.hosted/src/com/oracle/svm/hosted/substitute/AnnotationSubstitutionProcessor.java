@@ -1064,7 +1064,7 @@ public class AnnotationSubstitutionProcessor extends SubstitutionProcessor {
 
     protected <T extends Annotation> T lookupAnnotation(AnnotatedElement element, Class<T> annotationClass) {
         assert element instanceof Class || element instanceof Executable || element instanceof Field : element.getClass();
-        return element.getAnnotation(annotationClass);
+        return GuardedAnnotationAccess.getAnnotation(element, annotationClass);
     }
 
     protected static String deleteErrorMessage(AnnotatedElement element, Delete deleteAnnotation, boolean hosted) {

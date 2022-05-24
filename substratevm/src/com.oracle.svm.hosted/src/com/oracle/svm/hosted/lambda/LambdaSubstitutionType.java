@@ -25,10 +25,12 @@
 package com.oracle.svm.hosted.lambda;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 
 import com.oracle.graal.pointsto.infrastructure.OriginalClassProvider;
 import com.oracle.graal.pointsto.util.GraalAccess;
 import com.oracle.svm.core.jdk.LambdaFormHiddenMethod;
+import com.oracle.svm.util.AnnotationWrapper;
 
 import jdk.vm.ci.meta.Assumptions.AssumptionResult;
 import jdk.vm.ci.meta.JavaConstant;
@@ -43,7 +45,7 @@ import jdk.vm.ci.meta.UnresolvedJavaType;
 /**
  * Simply changes the name of Lambdas from a random ID into a stable name.
  */
-public class LambdaSubstitutionType implements ResolvedJavaType, OriginalClassProvider {
+public class LambdaSubstitutionType implements ResolvedJavaType, OriginalClassProvider, AnnotationWrapper {
     private final ResolvedJavaType original;
     private final String stableName;
 
@@ -74,6 +76,16 @@ public class LambdaSubstitutionType implements ResolvedJavaType, OriginalClassPr
             return annotationClass.cast(LambdaFormHiddenMethod.Holder.INSTANCE);
         }
         return null;
+    }
+
+    @Override
+    public AnnotatedElement getAnnotationRoot() {
+        return null;
+    }
+
+    @Override
+    public Annotation[] getInjectedAnnotations() {
+        return LambdaFormHiddenMethod.Holder.ARRAY;
     }
 
     @Override

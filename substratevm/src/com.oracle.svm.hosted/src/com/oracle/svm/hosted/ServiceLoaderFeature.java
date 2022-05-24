@@ -121,6 +121,7 @@ public class ServiceLoaderFeature implements Feature {
                     "com.oracle.svm.hosted.NativeImageClassLoaderPostProcessing",
                     "com.oracle.svm.hosted.agent.NativeImageBytecodeInstrumentationAgentExtension",
                     "org.graalvm.nativeimage.Platform",
+                    "org.graalvm.util.AnnotationExtracter",
                     /*
                      * Loaded in java.util.random.RandomGeneratorFactory.FactoryMapHolder, which is
                      * initialized at image build time.

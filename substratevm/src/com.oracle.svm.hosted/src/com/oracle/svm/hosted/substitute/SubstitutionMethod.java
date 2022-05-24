@@ -28,6 +28,7 @@ import static com.oracle.svm.core.util.VMError.shouldNotReachHere;
 import static com.oracle.svm.core.util.VMError.unimplemented;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
 
@@ -38,6 +39,7 @@ import com.oracle.graal.pointsto.infrastructure.GraphProvider;
 import com.oracle.graal.pointsto.infrastructure.OriginalMethodProvider;
 import com.oracle.graal.pointsto.meta.HostedProviders;
 import com.oracle.graal.pointsto.util.GraalAccess;
+import com.oracle.svm.util.AnnotationWrapper;
 
 import jdk.vm.ci.meta.Constant;
 import jdk.vm.ci.meta.ConstantPool;
@@ -51,7 +53,7 @@ import jdk.vm.ci.meta.ResolvedJavaType;
 import jdk.vm.ci.meta.Signature;
 import jdk.vm.ci.meta.SpeculationLog;
 
-public class SubstitutionMethod implements ResolvedJavaMethod, GraphProvider, OriginalMethodProvider {
+public class SubstitutionMethod implements ResolvedJavaMethod, GraphProvider, OriginalMethodProvider, AnnotationWrapper {
 
     private final ResolvedJavaMethod original;
     private final ResolvedJavaMethod annotated;
@@ -220,6 +222,11 @@ public class SubstitutionMethod implements ResolvedJavaMethod, GraphProvider, Or
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return annotated.getAnnotation(annotationClass);
+    }
+
+    @Override
+    public AnnotatedElement getAnnotationRoot() {
+        return annotated;
     }
 
     @Override
